@@ -107,7 +107,7 @@ def main():
     with ThreadPoolExecutor(max_workers=4) as pool: data['series']=list(pool.map(price,data['series']))
     data['asOf']=max(data['asOf'],TODAY)
     counts={k:sum(s['updateStatus']==k for s in data['series']) for k in ['ok','error','manual']}
-    data['automation']={'lastAttemptAt':CHECKED,'counts':counts,'schedule':'每天台灣時間 07:25（GitHub 可能延遲）'}
+    data['automation']={'lastAttemptAt':CHECKED,'counts':counts,'schedule':'每 4 小時，台灣時間 00:25、04:25、08:25、12:25、16:25、20:25（GitHub 可能延遲）'}
     data['limitations']=[x for x in data['limitations'] if '尚未啟用自動更新' not in x]
     note='自動更新逐來源執行；失敗保留舊值。中鋼、燁聯、唐榮調整額仍須人工核對；新聞自動收錄不代表已確認盤價。'
     if note not in data['limitations']:data['limitations'].append(note)
