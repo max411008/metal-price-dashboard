@@ -12,7 +12,7 @@
  function buildReport(){
   const selected=getReportSelection(),{includePrices,includeNews,series}=selected;
   const now=new Intl.DateTimeFormat('zh-TW',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
-  let html=`<div class="report-title"><span>METALS / TAIWAN & GLOBAL</span><h1>鋼鐵原料與市場消息報表</h1><p>出表時間：${esc(now)}（台北）</p></div><div class="report-context">${includePrices?`<p>價格範圍：${esc(group)}／${esc(item==='all'?'全部品項':series[0]?.title||'')} · ${startDate()} 至 ${DATA.asOf}</p>`:''}${includeNews?`<p>新聞篩選：${esc(selected.news.category)}／${esc(selected.news.direction)} · 收錄 ${selected.news.items.length} 則 · 整理日 ${esc(selected.news.updatedAt)}</p>`:''}<p>資料為歷史快照，尚未自動更新。各品項的資料截止日、幣別與單位不同。</p></div>`;
+  let html=`<div class="report-title"><span>METALS / TAIWAN & GLOBAL</span><h1>鋼鐵原料與市場消息報表</h1><p>出表時間：${esc(now)}（台北）</p></div><div class="report-context">${includePrices?`<p>價格範圍：${esc(group)}／${esc(item==='all'?'全部品項':series[0]?.title||'')} · ${startDate()} 至 ${DATA.asOf}</p>`:''}${includeNews?`<p>新聞篩選：${esc(selected.news.category)}／${esc(selected.news.direction)} · 收錄 ${selected.news.items.length} 則 · 整理日 ${esc(selected.news.updatedAt)}</p>`:''}<p>每日排程檢查；抓取失敗保留舊值，部分鋼廠調整額仍須人工核對。各品項的截止日、幣別與單位不同。</p></div>`;
   if(includePrices){
    html+='<h2 class="report-section-title">價格與盤價總表</h2><table class="report-table"><thead><tr><th>品項／單位</th><th>資料日期</th><th>最新值</th><th>較前筆</th></tr></thead><tbody>';
    for(const s of series){const p=visiblePoints(s).filter(p=>p.value!=null),last=p.at(-1),prev=p.at(-2),delta=last&&prev?last.value-prev.value:null;

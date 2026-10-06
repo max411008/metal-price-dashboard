@@ -1,0 +1,53 @@
+name: Update prices and news
+on:
+  schedule:
+    - cron: '25 23 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['scripts/**', 'docs/**', '.github/workflows/update.yml']
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: metal-dashboard-update
+  cancel-in-progress: false
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install openpyxl==3.1.5
+      - run: python -m unittest discover -s tests
+      - run: python scripts/update.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node validate.mjs
+      - name: Save observations
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/data.json docs/news.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Refresh prices and news'
+            git push
+          fi
+      - name: Prepare website
+        run: |
+          mkdir -p _site/docs
+          cp -a docs/. _site/docs/
+          cp index.html _site/index.html
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - uses: actions/deploy-pages@v4
+        id: deploy
